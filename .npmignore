@@ -1,5 +1,6 @@
 src/
 .editorconfig
+.env.test
+.gitignore
 jest.config.js
 tsconfig.json
-.env
