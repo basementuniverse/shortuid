@@ -2,6 +2,10 @@
 
 Generate short unique IDs.
 
+This can be useful when you have an auto-increment ID column in your database, but you want to show a short alpha-numeric ID to users.
+
+With this package you can convert sequential numbers to random-looking ID strings and back again.
+
 ## Installation
 
 ```
