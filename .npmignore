@@ -1,0 +1,5 @@
+src/
+.editorconfig
+jest.config.js
+tsconfig.json
+.env
