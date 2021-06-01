@@ -1,5 +1,5 @@
 {
-  "name": "shortuid",
+  "name": "@basementuniverse/shortuid",
   "version": "0.1.0",
   "description": "Generate short unique IDs",
   "main": "build/index.js",
