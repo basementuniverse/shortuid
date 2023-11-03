@@ -1,48 +1,63 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.decode = exports.encode = void 0;
 const bignumber_js_1 = require("bignumber.js");
-const dotenv = require("dotenv-flow");
-dotenv.config();
-const getEnv = (k) => {
-    if (k in process.env) {
-        return process.env[k];
-    }
-    throw new Error(`.env variable ${k} not found`);
+const defaultOptions = {
+    prime: '6345796823',
+    base: '10212011',
+    inverse: '3736125',
+    mixer: '28737113',
+    alpha: '568vhgxrwkfjyn9d3pc2mqbaz74set',
 };
-const prime = new bignumber_js_1.default(getEnv('PRIME'));
-const base = new bignumber_js_1.default(getEnv('BASE'));
-const inverse = new bignumber_js_1.default(getEnv('INVERSE'));
-const mixer = new bignumber_js_1.default(getEnv('MIXER'));
-const alpha = getEnv('ALPHA');
-const alphaBase = new bignumber_js_1.default(alpha.length);
-function encode(i) {
-    return encode2(encode1(i));
-}
-exports.encode = encode;
-function decode(id) {
-    return decode2(decode1(id));
-}
-exports.decode = decode;
-function encode1(i) {
-    return prime.multipliedBy(i).plus(mixer).modulo(base);
-}
-function encode2(i) {
-    let result = '';
-    while (i.isGreaterThan(0)) {
-        const remainder = i.modulo(alphaBase);
-        i = i.minus(remainder).dividedBy(alphaBase);
-        result += alpha[remainder.toNumber()];
+class Shortuid {
+    static encode(i, options = defaultOptions) {
+        const internalOptions = this.parseOptions(options);
+        return this.encode2(this.encode1(i, internalOptions), internalOptions);
     }
-    return result;
-}
-function decode1(id) {
-    let result = new bignumber_js_1.default(0);
-    for (let i = id.length; i--;) {
-        result = result.plus(new bignumber_js_1.default(alpha.indexOf(id[i])).multipliedBy(alphaBase.exponentiatedBy(i)));
+    static decode(id, options = defaultOptions) {
+        const internalOptions = this.parseOptions(options);
+        return this.decode2(this.decode1(id, internalOptions), internalOptions);
     }
-    return result;
+    static parseOptions(options) {
+        return {
+            prime: new bignumber_js_1.default(options.prime),
+            base: new bignumber_js_1.default(options.base),
+            inverse: new bignumber_js_1.default(options.inverse),
+            mixer: new bignumber_js_1.default(options.mixer),
+            alpha: options.alpha,
+            alphaBase: new bignumber_js_1.default(options.alpha.length),
+        };
+    }
+    static encode1(i, options) {
+        return options.prime
+            .multipliedBy(i)
+            .plus(options.mixer)
+            .modulo(options.base);
+    }
+    static encode2(i, options) {
+        let result = '';
+        while (i.isGreaterThan(0)) {
+            const remainder = i.modulo(options.alphaBase);
+            i = i.minus(remainder).dividedBy(options.alphaBase);
+            result += options.alpha[remainder.toNumber()];
+        }
+        return result;
+    }
+    static decode1(id, options) {
+        let result = new bignumber_js_1.default(0);
+        for (let i = id.length; i--;) {
+            result = result
+                .plus(new bignumber_js_1.default(options.alpha.indexOf(id[i]))
+                .multipliedBy(options.alphaBase.exponentiatedBy(i)));
+        }
+        return result;
+    }
+    static decode2(i, options) {
+        return i
+            .minus(options.mixer)
+            .multipliedBy(options.inverse)
+            .modulo(options.base)
+            .plus(options.base)
+            .toNumber();
+    }
 }
-function decode2(i) {
-    return i.minus(mixer).multipliedBy(inverse).modulo(base).plus(base).toNumber();
-}
+exports.default = Shortuid;
