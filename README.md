@@ -51,12 +51,17 @@ const decodedNumericId = Shortuid.decode(encodedShortId, options);
 console.assert(decodedNumericId === numericId);
 ```
 
-This might be helpful for generating a shuffled alphabet:
+Some helper scripts are provided which might be useful for generating options:
 
-```javascript
-'abcdefghijklmnopqrstuvwxyz123456789'
-  .split('')
-  .map(a => ({ sort: Math.random(), value: a }))
-  .sort((a, b) => a.sort - b.sort)
-  .map(a => a.value).join('')
+```bash
+cd helpers
+
+# Generate prime, base, inverse and mixer:
+node generate-options.js
+
+# Generate a random alphabet:
+node generate-alphabet.js
+
+# Check for collisions:
+node check-collisions.js
 ```
